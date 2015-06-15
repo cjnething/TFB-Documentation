@@ -1,5 +1,5 @@
 The relevant code for Travis-CI within TFB is within the 
-[toolsets directory](https://github.com/TechEmpower/FrameworkBenchmarks/tree/master/toolset), 
+[toolset/ directory](https://github.com/TechEmpower/FrameworkBenchmarks/tree/master/toolset), 
 which contains the code that TFB uses to automate installing, 
 launching, load testing, and terminating each framework.
 
@@ -13,13 +13,15 @@ At a high level, there is a github hook that notifies travis-ci every
 time new commits are pushed to master, or every time new commits 
 are pushed to a pull request. Each push causes travis to launch a 
 virtual machine, checkout the code, run an installation, and run
-a verification.
+a verification. This process ensures that additions to `master`, or 
+development branch, run smoothly with the other scripts 
+and frameworks that make up the benchmarks.
 
 [Travis-ci.org](https://travis-ci.org/) is a free 
 ([pro available](https://travis-ci.com/)) service, and we have a limited 
 number of virtual machines available. If you are pushing one 
 commit, consider including `[ci skip]` *anywhere* in the commit 
-message if you don't need Travis. If you are pushing many commits, 
+message if you don't need a Travis verification. If you are pushing many commits, 
 use `[ci skip]` in *all* of the commit messages to disable Travis. 
 
 ### Travis Terminology
@@ -34,7 +36,7 @@ one *job* for `go`, one *job* for `activeweb`, etc. Each
 installation for that framework (using `--install server`) and 
 verifies the framework's output using `--mode verify`. 
 
-The *.travis.yml* file specifies the *build matrix*, which is 
+The `.travis.yml` file specifies the *build matrix*, which is 
 the set of *jobs* that should be run for each *build*. Our 
 *build matrix* lists each framework directory, which causes 
 each *build* to have one *job* for each listed directory. 
@@ -69,7 +71,8 @@ Discussed below
 
 **Max Console Output**: A *job* can only ouput `4MB` of log data before it 
 is terminated by Travis. Some of our larger builds (e.g. `aspnet`) run into 
-this limit, but most do not
+this limit, but most do not. This is one of the reasons that limiting logging 
+for frameworks is important. Moreso response logging than sparse debug logging.
 
 ### Dealing with Travis' Limits
 
@@ -96,7 +99,8 @@ log in with Github, and enable Travis-CI on your fork of TFB.
 first commit can modify `.travis.yml` to remove any lines that you are not interested
 in. Be sure to name this commit something like `DO NOT MERGE` to remind you that you
 should do a `git rebase --interactive` and delete that commit before you do a pull 
-request. 
+request. Doing a `git revert <commmit_that_commented_out_travis_lines>` should also work, 
+this adds a commit that negates the target commit.
 
 **Use the Travis-CI Command Line to Quickly Cancel Jobs**: Travis has a ruby command line. 
 After you install it and log into your Github account, you can do something like this: 
@@ -111,17 +115,12 @@ latency, so doing this loop can take 30 minutes to complete. If you fork each jo
 the loop will complete in seconds and the jobs will still be canceled properly. 
 
 **How to see log files on Travis-CI**: You may occasionally need to see a log file. 
-You can use your setup.py's stop function to cat the file to stdout. 
-    
-    subprocess.call('cat <my-log-file>', shell=True, stdout=logfile)
-
-This may cause issues with the Travis-CI **Max Console Output** limitation. An alternative
-is to upload the file to an online service like sprunge: 
-
-    subprocess.call("cat <my-log-file> | curl -F 'sprunge=<-' http://sprunge.us", shell=True, stdout=logfile)
-
-If you need to use these solutions, please be sure to remove them (or comment them out)
-before you send in a pull request.
+The best place for this is on the travis website itself. As a job is being run, the 
+output of the job will be captured by Travis. Looking at the log files are a good way 
+to pinpoint a cause of failure. Recall that Travis is a completely separate environment 
+from the host computer, and even the virtual machine that Vagrant makes. We do our best to 
+keep these environments as similar as possible, but *Travis-specific issues are possible*, 
+in our experience we have seen databases fail to start up when they are supposed to.
 
 ### Advanced Travis Details
 
