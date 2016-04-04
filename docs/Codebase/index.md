@@ -168,7 +168,7 @@ Script for [Travis-CI](../Project-Information/Travis-CI).
 
 ### .travis.yml
 
-Provides Travis-CI with the relevant information to test TFB. See the 
+Provides Travis-CI with the relevant information to test TFB. New frameworks must be added to `.travis.yml` so that travis will test the framework as part of our continuous integration scheme. See the 
 [Travis-CI](../Project-Information/Travis-CI) section for more information.
 
 ### benchmark.cfg
