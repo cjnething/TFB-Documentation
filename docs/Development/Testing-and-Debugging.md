@@ -71,6 +71,14 @@ done and your changes pass the Travis-CI verification, submit a pull
 request with confidence that it can be merged quickly. 
 [Read more about TFB and Travis-CI](../Project-Information/Travis-CI.md).
 
+### Adding A New Framework to Travis
+If you are adding a new framework to the benchmarks, Travis will not test the new framework unless you add it to the travis.yml file. Here is the bash script if you need to update this:
+```
+cd frameworks
+find . -type d -depth 2 | sed 's|./|    - "TESTDIR=|' | sed 's/$/"/g'
+```
+The tests are organized alphabetically by language and then by framework, in the following format:  "TESTDIR=JavaScript/nodejs"
+
 ### Important Note About Travis-CI
 
 If you make changes to configuration files, or files outside your framework

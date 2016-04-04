@@ -9,6 +9,7 @@ these steps:
 use the table/collection `hello_world`. Our database setup scripts are stored 
 inside the `config/` folder if you need to see the database schema.
 * [Test your framework](Testing-and-Debugging) appropriately.
+* Add your framework to the travis.yml file so that Travis will test it.
 * Add/Update a [README](Readme-Formats#language-readmes) for your 
 framework.
 * Add/Update a [README](Readme-Formats#framework-readmes) for your
